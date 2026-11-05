@@ -1,0 +1,197 @@
+{
+  "database": "SQLite",
+  "schemaVersion": 1,
+  "tables": [
+    {
+      "name": "users",
+      "purpose": "One row per application user. MVP sign-in credentials are not stored here.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "TEXT",
+          "primaryKey": true
+        },
+        {
+          "name": "username",
+          "type": "TEXT",
+          "notNull": true,
+          "unique": true
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notNull": true,
+          "format": "UTC ISO 8601"
+        }
+      ]
+    },
+    {
+      "name": "boards",
+      "purpose": "One board per user.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "TEXT",
+          "primaryKey": true
+        },
+        {
+          "name": "user_id",
+          "type": "TEXT",
+          "notNull": true,
+          "unique": true,
+          "references": "users.id",
+          "onDelete": "CASCADE"
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notNull": true,
+          "format": "UTC ISO 8601"
+        },
+        {
+          "name": "updated_at",
+          "type": "TEXT",
+          "notNull": true,
+          "format": "UTC ISO 8601"
+        }
+      ]
+    },
+    {
+      "name": "columns",
+      "purpose": "Fixed board stages. The MVP seeds five columns and allows their titles to be renamed.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "TEXT",
+          "primaryKey": true
+        },
+        {
+          "name": "board_id",
+          "type": "TEXT",
+          "notNull": true,
+          "references": "boards.id",
+          "onDelete": "CASCADE"
+        },
+        {
+          "name": "title",
+          "type": "TEXT",
+          "notNull": true
+        },
+        {
+          "name": "position",
+          "type": "INTEGER",
+          "notNull": true
+        }
+      ],
+      "uniqueConstraints": [
+        ["board_id", "position"]
+      ]
+    },
+    {
+      "name": "cards",
+      "purpose": "Cards belong to one column and are ordered within that column.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "TEXT",
+          "primaryKey": true
+        },
+        {
+          "name": "column_id",
+          "type": "TEXT",
+          "notNull": true,
+          "references": "columns.id",
+          "onDelete": "CASCADE"
+        },
+        {
+          "name": "title",
+          "type": "TEXT",
+          "notNull": true
+        },
+        {
+          "name": "details",
+          "type": "TEXT",
+          "notNull": true
+        },
+        {
+          "name": "position",
+          "type": "INTEGER",
+          "notNull": true
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT",
+          "notNull": true,
+          "format": "UTC ISO 8601"
+        },
+        {
+          "name": "updated_at",
+          "type": "TEXT",
+          "notNull": true,
+          "format": "UTC ISO 8601"
+        }
+      ],
+      "uniqueConstraints": [
+        ["column_id", "position"]
+      ]
+    }
+  ],
+  "boardApiRepresentation": {
+    "columns": [
+      {
+        "id": "col-backlog",
+        "title": "Backlog",
+        "cardIds": ["card-1"]
+      },
+      {
+        "id": "col-discovery",
+        "title": "Discovery",
+        "cardIds": ["card-2"]
+      },
+      {
+        "id": "col-progress",
+        "title": "In Progress (renamed)",
+        "cardIds": ["card-3"]
+      },
+      {
+        "id": "col-review",
+        "title": "Review",
+        "cardIds": []
+      },
+      {
+        "id": "col-done",
+        "title": "Done",
+        "cardIds": ["card-4"]
+      }
+    ],
+    "cards": {
+      "card-1": {
+        "id": "card-1",
+        "title": "Plan roadmap",
+        "details": "Draft the next milestone."
+      },
+      "card-2": {
+        "id": "card-2",
+        "title": "Review feedback",
+        "details": "Summarize recent user feedback."
+      },
+      "card-3": {
+        "id": "card-3",
+        "title": "Build prototype",
+        "details": "Implement the first version."
+      },
+      "card-4": {
+        "id": "card-4",
+        "title": "Publish release",
+        "details": "Share the completed release."
+      }
+    }
+  },
+  "rules": [
+    "Each user has at most one board.",
+    "Columns are created with the board; users can rename them but cannot add or remove stages.",
+    "A card belongs to exactly one column. Moving a card changes its column and position.",
+    "Column and card positions are zero-based and unique within their parent.",
+    "The MVP validates the hardcoded user/password in the backend; passwords are not stored in SQLite."
+  ]
+}

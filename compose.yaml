@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_PATH: /data/pm.sqlite3
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      SESSION_SECRET: ${SESSION_SECRET:-local-development-only-session-secret}
+    volumes:
+      - app_data:/data
+
+volumes:
+  app_data:

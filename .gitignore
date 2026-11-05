@@ -174,3 +174,13 @@ cython_debug/
 
 .DS_Store
 
+# Local application data and generated frontend output
+*.sqlite3
+*.sqlite3-*
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/coverage/
+frontend/test-results/
+backend/.venv/
+backend/.pytest_cache/
